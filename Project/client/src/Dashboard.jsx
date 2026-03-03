@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
@@ -5,6 +6,39 @@ export default function Dashboard() {
 
   const stored = localStorage.getItem("loggedInUser");
   const user = stored ? JSON.parse(stored) : null;
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [changeMsg, setChangeMsg] = useState("");
+  
+   async function handleChangePassword(e) {
+    e.preventDefault();
+    setChangeMsg("");
+
+    try {
+      const res = await fetch("http://localhost:3000/user/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          u_email: user.u_email,
+          old_password: oldPassword,
+          new_password: newPassword
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setChangeMsg(data.message || "Could not change password");
+        return;
+      }
+
+      setChangeMsg(data.message || "Password updated");
+      setOldPassword("");
+      setNewPassword("");
+    } catch (err) {
+      setChangeMsg("Server error");
+    }
+  }
 
   function handleLogout() {
     localStorage.removeItem("loggedInUser");
@@ -34,6 +68,37 @@ export default function Dashboard() {
           
           
         </div>
+      </div>
+ {/* Copilot generated change password form */}
+
+      <div style={{ padding: 16, border: "1px solid #ddd", borderRadius: 10, marginTop: 20 }}>
+        <h3>Change Password</h3>
+        <form onSubmit={handleChangePassword}>
+          <div style={{ display: "grid", gridTemplateColumns: "180px 1fr", rowGap: 10 }}>
+            <label htmlFor="oldPassword">Old Password:</label>
+            <input
+              type="password"
+              id="oldPassword"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+            />
+            <label htmlFor="newPassword">New Password:</label>
+            <input
+              type="password"
+              id="newPassword"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" style={{ marginTop: 10, padding: "10px 14px", cursor: "pointer" }}>
+            Change Password
+          </button>
+          {changeMsg && (
+            <p style={{ color: changeMsg.includes("updated") ? "green" : "red", marginTop: 10 }}>
+              {changeMsg}
+            </p>
+          )}
+        </form>
       </div>
     </div>
   );

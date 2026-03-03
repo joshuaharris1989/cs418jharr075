@@ -10,6 +10,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // forgot password state
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotMsg, setForgotMsg] = useState("");
+
   const navigate = useNavigate();
 
   function handleInputChange(identifier, value) {
@@ -55,16 +59,42 @@ export default function Login() {
       // Step 2: Store email temporarily
       localStorage.setItem("pendingOtpEmail", enteredEmail);
 
-      //  Step 3: Redirect to OTP page
-      // Used after API success
-      // Used inside event handlers
-      // Used conditionally
+      // Step 3: Redirect to OTP page
       navigate("/verify-otp");
-
     } catch (err) {
       setError(err?.message || "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotMsg("");
+
+    if (!forgotEmail.includes("@")) {
+      setForgotMsg("Please enter a valid email.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/user/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ u_email: forgotEmail }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setForgotMsg(data?.message || "Could not send reset link");
+        return;
+      }
+
+      setForgotMsg(data?.message || "Reset link sent. Check your email.");
+      setForgotEmail("");
+    } catch (err) {
+      setForgotMsg("Server error");
     }
   };
 
@@ -112,10 +142,6 @@ export default function Login() {
         </div>
 
         <div className="actions">
-          {/* Better UX: link to signup route */}
-          {/* Used for navigation triggered by user clicking UI
-              Cleaner than using <a href>
-              Does NOT reload the page */}
           <Link to="/signup" className="button" style={{ textAlign: "center" }}>
             Create a new account
           </Link>
@@ -125,6 +151,32 @@ export default function Login() {
           </button>
         </div>
       </form>
+
+      <hr style={{ margin: "20px 0" }} />
+
+      <div>
+        <h3>Forgot Password?</h3>
+
+        <form onSubmit={handleForgotPassword}>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+            style={{ padding: 10, width: "100%", maxWidth: 320 }}
+          />
+
+          <button
+            type="submit"
+            className="button"
+            style={{ marginTop: 10, width: "fit-content" }}
+          >
+            Send Reset Link
+          </button>
+        </form>
+
+        {forgotMsg && <p style={{ marginTop: 10 }}>{forgotMsg}</p>}
+      </div>
     </div>
   );
 }
