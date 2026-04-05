@@ -7,12 +7,15 @@ import {
   useSearchParams,
 } from "react-router-dom";
 
+import AdvisingHistory from "./AdvisingHistory";
+import AdvisingForm from "./AdvisingForm";
 import "./App.css";
 import Dashboard from "./Dashboard.jsx";
 import Header from "./Header.jsx";
 import Login from "./Login.jsx";
 import Signup from "./Signup.jsx";
 import VerifyOtp from "./VerifyOtp.jsx";
+import AdminAdvising from "./AdminAdvising.jsx";
 
 function ResetPasswordInline() {
   const [params] = useSearchParams();
@@ -114,6 +117,10 @@ function App() {
           <Route path="/reset-password" element={<ResetPasswordInline />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/advising" element={<AdvisingHistory />} />
+          <Route path="/advising/:id" element={<AdvisingForm />} />
+          <Route path="/advising/new" element={<AdvisingForm />} />
+          <Route path="/admin/advising" element={<AdminAdvising />} />
         </Routes>
       </main>
     </Router>
