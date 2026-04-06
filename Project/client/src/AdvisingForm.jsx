@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_KEY;
+
 function AdvisingForm() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -47,7 +49,7 @@ function AdvisingForm() {
       }
 
       try {
-        const res = await fetch(API + "/advising");
+        const res = await fetch(API + "/advising/" + id);
         const data = await res.json();
 
         if (!res.ok) {
@@ -96,7 +98,9 @@ function AdvisingForm() {
 
       try {
         const res = await fetch(
-          API + "/advising/" + id +
+          API +
+            "/advising/completed/" +
+            user.u_id +
             "/" +
             encodeURIComponent(lastTerm)
         );
@@ -152,7 +156,11 @@ function AdvisingForm() {
     e.preventDefault();
     setMsg("");
 
-    if (lastTerm.trim() === "" || lastGpa.trim() === "" || currentTerm.trim() === "") {
+    if (
+      lastTerm.trim() === "" ||
+      lastGpa.trim() === "" ||
+      currentTerm.trim() === ""
+    ) {
       setMsg("Please fill in all of the history fields.");
       return;
     }
@@ -228,7 +236,11 @@ function AdvisingForm() {
           marginBottom: 20
         }}
       >
-        <h2>{id && id !== "new" ? "Course Advising Record" : "New Course Advising Form"}</h2>
+        <h2>
+          {id && id !== "new"
+            ? "Course Advising Record"
+            : "New Course Advising Form"}
+        </h2>
         <button onClick={() => navigate("/advising")}>Back to History</button>
       </div>
 
@@ -323,7 +335,9 @@ function AdvisingForm() {
               >
                 <select
                   value={course.level}
-                  onChange={(e) => handleCourseChange(index, "level", e.target.value)}
+                  onChange={(e) =>
+                    handleCourseChange(index, "level", e.target.value)
+                  }
                   disabled={locked}
                 >
                   <option value="">Select Level</option>
@@ -336,7 +350,9 @@ function AdvisingForm() {
 
                 <select
                   value={course.name}
-                  onChange={(e) => handleCourseChange(index, "name", e.target.value)}
+                  onChange={(e) =>
+                    handleCourseChange(index, "name", e.target.value)
+                  }
                   disabled={locked}
                   style={{
                     border: alreadyTaken ? "2px solid red" : ""
@@ -351,10 +367,7 @@ function AdvisingForm() {
                 </select>
 
                 {!locked && (
-                  <button
-                    type="button"
-                    onClick={() => removeRow(index)}
-                  >
+                  <button type="button" onClick={() => removeRow(index)}>
                     Remove
                   </button>
                 )}
