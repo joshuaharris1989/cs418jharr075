@@ -16,6 +16,7 @@ import Login from "./Login.jsx";
 import Signup from "./Signup.jsx";
 import VerifyOtp from "./VerifyOtp.jsx";
 import AdminAdvising from "./AdminAdvising.jsx";
+const API = import.meta.env.VITE_API_KEY;
 
 function ResetPasswordInline() {
   const [params] = useSearchParams();
@@ -37,7 +38,7 @@ function ResetPasswordInline() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/user/reset-password", {
+      const res = await fetch(API + "/user/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

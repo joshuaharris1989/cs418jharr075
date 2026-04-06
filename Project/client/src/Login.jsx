@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+const API = import.meta.env.VITE_API_KEY;
 
 export default function Login() {
   const [enteredEmail, setEnteredEmail] = useState("");
@@ -78,12 +79,11 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/user/forgot-password", {
+      const res = await fetch(API + "/user/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ u_email: forgotEmail }),
       });
-
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {

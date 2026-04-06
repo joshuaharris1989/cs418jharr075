@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+const API = import.meta.env.VITE_API_KEY;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function Dashboard() {
     setChangeMsg("");
 
     try {
-      const res = await fetch("http://localhost:3000/user/change-password", {
+      const res = await fetch(API + "/user/change-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

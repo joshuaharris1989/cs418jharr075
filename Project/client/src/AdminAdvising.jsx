@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+const API = import.meta.env.VITE_API_KEY;
 
 function AdminAdvising() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ function AdminAdvising() {
     async function loadRecords() {
       try {
         const res = await fetch(
-          "http://localhost:3000/advising/admin/all/list?t=" + Date.now(),
+          API + "/advising/admin/all/list?t=" + Date.now(),
           { cache: "no-store" }
         );
 
@@ -45,7 +46,7 @@ function AdminAdvising() {
     setMsg("");
 
     try {
-      const res = await fetch("http://localhost:3000/advising/admin/status/" + id, {
+      const res = await fetch(API + "/advising/admin/status/" + id, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"

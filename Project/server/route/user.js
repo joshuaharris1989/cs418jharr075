@@ -2,6 +2,7 @@ import { Router } from "express";
 import { connection } from "../database/connection.js";
 import { sendEmail } from '../helper/sendmail.js';
 import { comparePassword, hashPassword } from "../helper/util.js";
+import.meta.env.VITE_API_URL
 const user = Router();
 
 

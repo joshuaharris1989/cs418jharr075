@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-
+const API = import.meta.env.VITE_API_KEY;
 function AdvisingHistory() {
   const navigate = useNavigate();
   const [records, setRecords] = useState([]);
@@ -17,8 +17,7 @@ function AdvisingHistory() {
 
       try {
         const res = await fetch(
-          "http://localhost:3000/advising/history/" +
-            user.u_id +
+          API + "/advising/history/" + user.u_id +
             "?t=" +
             Date.now(),
           {

@@ -47,7 +47,7 @@ function AdvisingForm() {
       }
 
       try {
-        const res = await fetch("http://localhost:3000/advising/" + id);
+        const res = await fetch(API + "/advising");
         const data = await res.json();
 
         if (!res.ok) {
@@ -96,8 +96,7 @@ function AdvisingForm() {
 
       try {
         const res = await fetch(
-          "http://localhost:3000/advising/completed/" +
-            user.u_id +
+          API + "/advising/" + id +
             "/" +
             encodeURIComponent(lastTerm)
         );
@@ -189,11 +188,11 @@ function AdvisingForm() {
       courses: cleanedCourses
     };
 
-    let url = "http://localhost:3000/advising";
+    let url = API + "/advising";
     let method = "POST";
 
     if (id && id !== "new") {
-      url = "http://localhost:3000/advising/" + id;
+      url = API + "/advising/" + id;
       method = "PUT";
     }
 
