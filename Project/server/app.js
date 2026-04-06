@@ -6,16 +6,21 @@ import users from "./route/user.js";
 
 const app = express();
 app.set("etag", false);
-const port = 3000;
 
-const myLogger = function (req, res, next) {
+const port = process.env.PORT || 3000;
+
+function myLogger(req, res, next) {
   console.log("middleware logged");
   next();
-};
+}
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: [
+      process.env.FE_ORIGIN,
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type"],
     credentials: true,
@@ -23,8 +28,8 @@ app.use(
 );
 
 app.use(express.json());
-
 app.use(myLogger);
+
 app.use("/user", users);
 app.use("/advising", advising);
 
