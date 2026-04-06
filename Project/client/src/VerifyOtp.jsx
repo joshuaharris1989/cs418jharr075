@@ -35,7 +35,7 @@ export default function VerifyOtp() {
 
         try {
             const res = await fetch(
-                import.meta.env.VITE_API_KEY + "user/verify-login-otp",
+                import.meta.env.VITE_API_KEY + "/user/verify-login-otp",
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

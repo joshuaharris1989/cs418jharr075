@@ -93,7 +93,7 @@ function ResetPasswordInline() {
 
 function App() {
   const registerUser = async (payload) => {
-    const res = await fetch(import.meta.env.VITE_API_KEY + "user", {
+      const res = await fetch(API + "/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

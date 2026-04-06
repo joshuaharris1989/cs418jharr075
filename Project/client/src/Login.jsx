@@ -41,7 +41,7 @@ export default function Login() {
 
     try {
       // Step 1: Call existing login API (NO CHANGE to backend)
-      const res = await fetch(import.meta.env.VITE_API_KEY + "user/login", {
+      const res = await fetch(import.meta.env.VITE_API_KEY + "/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
