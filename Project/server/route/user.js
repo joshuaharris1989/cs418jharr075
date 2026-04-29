@@ -126,9 +126,19 @@ user.post("/", async (req, res) => {
         } = req.body;
 
         if (!u_first_name || !u_last_name || !u_email || !u_password) {
+            
             return res.status(400).json({
                 status: 400,
                 message: "Missing required fields",
+                data: null
+            });
+        }
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
+        if (!passwordRegex.test(u_password)) {
+            return res.status(400).json({
+                status: 400,
+                message: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
                 data: null
             });
         }
@@ -507,4 +517,5 @@ user.post("/verify-recaptcha", async (req, res) => {
     });
   }
 });
+
 export default user;

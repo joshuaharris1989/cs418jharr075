@@ -26,7 +26,10 @@ export default function Signup({ onRegister }) {
     if (!form.lastName.trim()) e.lastName = "Last name is required";
     if (!/^\d{9}$/.test(form.uin.trim())) e.uin = "UIN must be 9 digits";
     if (!form.email.includes("@")) e.email = "Valid email required";
-    if (form.password.length < 6) e.password = "Minimum 6 characters";
+    if (!passwordRegex.test(form.password)) {
+        e.password =
+          "Password must be at least 8 characters and include uppercase, lowercase, number, and special character";
+      }
     if (form.password !== form.confirmPassword)
       e.confirmPassword = "Passwords do not match";
     return e;

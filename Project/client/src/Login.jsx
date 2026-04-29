@@ -32,9 +32,10 @@ export default function Login() {
       setError("Please enter a valid email.");
       return;
     }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
-    if (enteredPassword.trim().length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!passwordRegex.test(enteredPassword)) {
+      setError("Password must be at least 8 characters and include uppercase, lowercase, number, and special character.");
       return;
     }
     
