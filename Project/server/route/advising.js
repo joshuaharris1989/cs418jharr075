@@ -176,25 +176,29 @@ router.get("/admin/all/list", async (req, res) => {
 });
 
 // admin: approve or reject
-router.put("/admin/status/:id", async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
+  router.put("/admin/status/:id", async (req, res) => {
+    const { id } = req.params;
+    const { status, feedback } = req.body;
 
-  if (status !== "approved" && status !== "rejected") {
-    return res.status(400).json({ error: "Invalid status" });
-  }
+    if (status !== "approved" && status !== "rejected") {
+      return res.status(400).json({ error: "Invalid status" });
+    }
 
-  try {
-    await connection.execute(
-      "UPDATE course_advising SET status = ? WHERE advising_id = ?",
-      [status, id]
-    );
+    if (!feedback || feedback.trim() === "") {
+      return res.status(400).json({ error: "Feedback message is required" });
+    }
 
-    res.json({ message: "Status updated" });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
+    try {
+      await connection.execute(
+        "UPDATE course_advising SET status = ?, feedback = ? WHERE advising_id = ?",
+        [status, feedback, id]
+      );
+
+      res.json({ message: "Status and feedback updated" });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
 
 export default router;

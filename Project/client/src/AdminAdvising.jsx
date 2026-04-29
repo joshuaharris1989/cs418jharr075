@@ -47,19 +47,29 @@ function AdminAdvising() {
   async function changeStatus(id, newStatus) {
     setMsg("");
 
+    const feedback = prompt("Enter feedback message for this advising form:");
+
+    if (!feedback || feedback.trim() === "") {
+      setMsg("Feedback is required before approving or rejecting.");
+      return;
+    }
+
     try {
       const res = await fetch(API + "/advising/admin/status/" + id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({
+          status: newStatus,
+          feedback: feedback,
+        }),
       });
 
       if (!res.ok) {
-        setMsg("Update failed");
+        const data = await res.json().catch(() => ({}));
+        setMsg(data.error || "Update failed");
         return;
       }
 
-      // reload records after update
       const updated = await fetch(
         API + "/advising/admin/all/list?t=" + Date.now(),
         { cache: "no-store" }
@@ -67,6 +77,7 @@ function AdminAdvising() {
 
       const data = await updated.json();
       setRecords(data);
+      setMsg("Status and feedback updated.");
     } catch (err) {
       setMsg("Server error");
     }
@@ -81,9 +92,10 @@ function AdminAdvising() {
       <table border="1" width="100%" cellPadding="10">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Student Name</th>
             <th>Term</th>
             <th>Status</th>
+            <th>Submitted</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -91,29 +103,33 @@ function AdminAdvising() {
         <tbody>
           {records.length === 0 ? (
             <tr>
-              <td colSpan="4">No records found</td>
+              <td colSpan="5">No records found</td>
             </tr>
           ) : (
             records.map((r) => (
               <tr key={r.advising_id}>
-                <td>
+                <td
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  onClick={() => navigate("/admin/advising/" + r.advising_id)}
+                >
                   {r.u_first_name} {r.u_last_name}
                 </td>
+
                 <td>{r.current_term}</td>
                 <td>{r.status}</td>
+                <td>{r.submitted_at}</td>
+
                 <td>
                   <button
-                    onClick={() =>
-                      changeStatus(r.advising_id, "approved")
-                    }
+                    type="button"
+                    onClick={() => changeStatus(r.advising_id, "approved")}
                   >
                     Approve
                   </button>
 
                   <button
-                    onClick={() =>
-                      changeStatus(r.advising_id, "rejected")
-                    }
+                    type="button"
+                    onClick={() => changeStatus(r.advising_id, "rejected")}
                     style={{ marginLeft: "10px" }}
                   >
                     Reject
