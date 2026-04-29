@@ -1,6 +1,7 @@
 import express from "express";
 import { connection } from "../database/connection.js";
 
+
 const router = express.Router();
 
 // student history

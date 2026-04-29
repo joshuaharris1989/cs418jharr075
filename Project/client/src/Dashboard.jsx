@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-const API = import.meta.env.VITE_API_KEY;
+
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
+  const API = import.meta.env.VITE_API_KEY;
   const savedUser = localStorage.getItem("loggedInUser");
   const user = savedUser ? JSON.parse(savedUser) : null;
 

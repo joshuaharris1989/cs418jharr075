@@ -459,4 +459,52 @@ user.post("/verify-login-otp", async (req, res) => {
         });
     }
 });
+
+user.post("/verify-recaptcha", async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      message: "Please complete the reCAPTCHA.",
+    });
+  }
+
+  try {
+    const secret = process.env.RECAPTCHA_SECRET;
+
+    const params = new URLSearchParams();
+    params.append("secret", secret);
+    params.append("response", token);
+
+    const googleResponse = await fetch(
+      "https://www.google.com/recaptcha/api/siteverify",
+      {
+        method: "POST",
+        body: params,
+      }
+    );
+
+    const data = await googleResponse.json();
+
+    if (!data.success) {
+      return res.status(400).json({
+        success: false,
+        message: "reCAPTCHA verification failed.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "reCAPTCHA verified.",
+    });
+  } catch (error) {
+    console.error("reCAPTCHA verification error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error while verifying reCAPTCHA.",
+    });
+  }
+});
 export default user;

@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import ReCAPTCHA from "react-google-recaptcha";
 const API = import.meta.env.VITE_API_KEY;
 
 export default function Login() {
   const [enteredEmail, setEnteredEmail] = useState("");
   const [enteredPassword, setEnteredPassword] = useState("");
-
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -36,8 +37,26 @@ export default function Login() {
       setError("Password must be at least 8 characters.");
       return;
     }
-
+    
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA.");
+      return;
+    }
     setLoading(true);
+
+        // Step 5: Verify reCAPTCHA BEFORE login
+    const captchaRes = await fetch(import.meta.env.VITE_API_KEY + "/user/verify-recaptcha", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: recaptchaToken }),
+    });
+
+    const captchaData = await captchaRes.json();
+
+    if (!captchaData.success) {
+      setError("reCAPTCHA verification failed.");
+      return;
+    }
 
     try {
       // Step 1: Call existing login API (NO CHANGE to backend)
@@ -145,6 +164,10 @@ export default function Login() {
           <Link to="/signup" className="button" style={{ textAlign: "center" }}>
             Create a new account
           </Link>
+           <ReCAPTCHA
+              sitekey={import.meta.env.VITE_SITE_KEY}
+              onChange={(value) => setRecaptchaToken(value)}
+          />
 
           <button className="button" type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
