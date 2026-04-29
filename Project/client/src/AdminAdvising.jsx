@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+
 const API = import.meta.env.VITE_API_KEY;
 
 function AdminAdvising() {
   const navigate = useNavigate();
+
   const [records, setRecords] = useState([]);
   const [msg, setMsg] = useState("");
 
@@ -48,97 +50,80 @@ function AdminAdvising() {
     try {
       const res = await fetch(API + "/advising/admin/status/" + id, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ status: newStatus })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
       });
 
-      const data = await res.json().catch(() => ({}));
-
       if (!res.ok) {
-        setMsg(data.error || "Could not update status.");
+        setMsg("Update failed");
         return;
       }
 
-      const updated = records.map((record) => {
-        if (record.advising_id === id) {
-          return { ...record, status: newStatus };
-        }
-        return record;
-      });
+      // reload records after update
+      const updated = await fetch(
+        API + "/advising/admin/all/list?t=" + Date.now(),
+        { cache: "no-store" }
+      );
 
-      setRecords(updated);
+      const data = await updated.json();
+      setRecords(data);
     } catch (err) {
       setMsg("Server error");
     }
   }
 
   return (
-    <div style={{ maxWidth: 1000, margin: "40px auto", padding: 20 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 20
-        }}
-      >
-        <h2>Admin Advising Review</h2>
-        <button onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
-      </div>
+    <div style={{ padding: "20px" }}>
+      <h2>Admin Advising Panel</h2>
 
       {msg && <p style={{ color: "red" }}>{msg}</p>}
 
-      {records.length === 0 ? (
-        <p>No records found.</p>
-      ) : (
-        <table
-          border="1"
-          cellPadding="10"
-          style={{ width: "100%", borderCollapse: "collapse" }}
-        >
-          <thead>
-            <tr>
-              <th>Student</th>
-              <th>Email</th>
-              <th>Term</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Open</th>
-              <th>Approve</th>
-              <th>Reject</th>
-            </tr>
-          </thead>
+      <table border="1" width="100%" cellPadding="10">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Term</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-          <tbody>
-            {records.map((record) => (
-              <tr key={record.advising_id}>
-                <td>{record.u_first_name} {record.u_last_name}</td>
-                <td>{record.u_email}</td>
-                <td>{record.current_term}</td>
-                <td>{record.status}</td>
-                <td>{new Date(record.submitted_at).toLocaleDateString()}</td>
+        <tbody>
+          {records.length === 0 ? (
+            <tr>
+              <td colSpan="4">No records found</td>
+            </tr>
+          ) : (
+            records.map((r) => (
+              <tr key={r.advising_id}>
                 <td>
-                  <button onClick={() => navigate("/advising/" + record.advising_id)}>
-                    View
-                  </button>
+                  {r.u_first_name} {r.u_last_name}
                 </td>
+                <td>{r.current_term}</td>
+                <td>{r.status}</td>
                 <td>
-                  <button onClick={() => changeStatus(record.advising_id, "approved")}>
+                  <button
+                    onClick={() =>
+                      changeStatus(r.advising_id, "approved")
+                    }
+                  >
                     Approve
                   </button>
-                </td>
-                <td>
-                  <button onClick={() => changeStatus(record.advising_id, "rejected")}>
+
+                  <button
+                    onClick={() =>
+                      changeStatus(r.advising_id, "rejected")
+                    }
+                    style={{ marginLeft: "10px" }}
+                  >
                     Reject
                   </button>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
