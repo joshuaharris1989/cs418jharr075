@@ -241,7 +241,14 @@ function AdvisingForm() {
             ? "Course Advising Record"
             : "New Course Advising Form"}
         </h2>
-        <button type="button"onClick={() => navigate("/advising")}>Back to List</button>
+        <button
+            type="button"
+            onClick={() => {
+              window.location.href = "/advising";
+          }}
+        >
+          Back to List
+        </button>
       </div>
 
       <form onSubmit={handleSubmit}>
