@@ -2,6 +2,8 @@ import { useState } from "react";
 import Field from "./Field";
 import "./Signup.css";
 
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
 export default function Signup({ onRegister }) {
   const [form, setForm] = useState({
     firstName: "",
